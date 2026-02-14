@@ -16,10 +16,8 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  transition: background 0.6s ease;
 }
 
-/* CARD */
 .card {
   backdrop-filter: blur(18px);
   background: rgba(255,255,255,0.18);
@@ -28,76 +26,55 @@ body {
   box-shadow: 0 0 60px rgba(0,0,0,0.3);
   position: relative;
   z-index: 5;
-  width: 370px;
+  width: 380px;
   transition: opacity 0.6s ease, transform 0.4s ease;
 }
 
 h1 {
   margin-bottom: 30px;
   font-size: 23px;
-  min-height: 80px;
+  min-height: 90px;
   color: white;
 }
 
-/* BUTTONS */
 .buttons {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 250px;
 }
 
 button {
-  padding: 15px 30px;
+  padding: 16px 32px;
   font-size: 16px;
   border: none;
   border-radius: 14px;
   position: absolute;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
-/* YES */
 .yes {
   background: #ff2e63;
   color: white;
   left: 50%;
   bottom: 15px;
   transform: translateX(-50%) scale(1);
-  animation: pulse 1.6s infinite;
+  box-shadow: 0 0 20px rgba(255,46,99,0.7);
 }
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.7); }
-  70% { box-shadow: 0 0 0 20px rgba(255,46,99,0); }
-  100% { box-shadow: 0 0 0 0 rgba(255,46,99,0); }
-}
-
-/* STAGE 3 DRAMATIC YES */
-.stage3-yes {
-  font-size: 22px;
-  animation: dramaticPulse 1.1s infinite;
-}
-
-@keyframes dramaticPulse {
-  0% { transform: translateX(-50%) scale(1.2); box-shadow: 0 0 15px #ff2e63; }
-  50% { transform: translateX(-50%) scale(1.5); box-shadow: 0 0 50px #ff2e63; }
-  100% { transform: translateX(-50%) scale(1.2); box-shadow: 0 0 15px #ff2e63; }
-}
-
-/* NO */
 .no {
   background: #222;
   color: white;
   left: 50%;
   top: 15px;
-  transform: translateX(-50%) scale(1);
+  transform: translateX(-50%);
 }
 
 /* HEARTS */
 .heart {
   position: fixed;
   bottom: -20px;
-  font-size: 20px;
+  font-size: 22px;
   animation: floatUp 5s linear forwards;
   opacity: 0.95;
   z-index: 0;
@@ -109,7 +86,7 @@ button {
   to { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
 }
 
-/* FINAL OVERLAY */
+/* FINAL */
 #finalOverlay {
   position: fixed;
   inset: 0;
@@ -130,23 +107,16 @@ button {
 }
 
 #lovePhoto {
-  width: 420px;
+  width: 450px;
   max-width: 90%;
   border-radius: 24px;
   box-shadow: 0 40px 120px rgba(0,0,0,0.7);
-  animation: slowZoom 6s ease forwards;
-}
-
-@keyframes slowZoom {
-  from { transform: scale(0.95); }
-  to { transform: scale(1.05); }
 }
 
 #finalText {
   margin-top: 30px;
   color: white;
   font-size: 19px;
-  letter-spacing: 0.5px;
 }
 </style>
 </head>
@@ -173,8 +143,20 @@ button {
 
 <script>
 let stage = 1;
-let scaleNo = 1;
-let scaleYes = 1;
+let noAttempts = 0;
+let yesScale = 1;
+
+const messages = [
+  "Are you sureee? 🥺",
+  "Think again… carefully 😌",
+  "You really want to press No? 😭",
+  "That hurts a little you know 💔",
+  "AANYA 😳 are you serious?",
+  "Okay now you're just testing me 😩",
+  "The Yes button is growing stronger 😈",
+  "Resistance is futile 💘",
+  "The Yes is taking over 😭"
+];
 
 const question = document.getElementById("question");
 const noBtn = document.getElementById("noBtn");
@@ -189,29 +171,38 @@ function createHeart() {
   heart.className = "heart";
   heart.textContent = "❤️";
   heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = (Math.random() * 25 + 18) + "px";
+  heart.style.fontSize = (Math.random() * 30 + 20) + "px";
   document.body.appendChild(heart);
   setTimeout(() => heart.remove(), 5000);
 }
-setInterval(createHeart, 180);
+setInterval(createHeart, 150);
 
-/* MOVE NO */
+/* NO ESCAPE + YES DOMINATION */
 function moveNo() {
-  const x = Math.random() * (window.innerWidth - 120);
-  const y = Math.random() * (window.innerHeight - 60);
 
+  if (stage > 2) return; // Stop chaos in final confirmation stage
+
+  noAttempts++;
+
+  if (noAttempts <= messages.length) {
+    question.textContent = messages[noAttempts - 1];
+  }
+
+  const x = Math.random() * (window.innerWidth - 140);
+  const y = Math.random() * (window.innerHeight - 80);
   noBtn.style.left = x + "px";
   noBtn.style.top = y + "px";
 
-  if (stage < 3) {
-    scaleNo -= 0.015;
-    if (scaleNo < 0.3) scaleNo = 0.3;
-    noBtn.style.transform = `scale(${scaleNo})`;
-  }
+  yesScale += 0.5;
 
-  scaleYes += 0.2;
-  yesBtn.style.transform = `translateX(-50%) scale(${scaleYes})`;
+  if (yesScale > 6) yesScale = 6; // cap so layout doesn’t break
+
+  yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
+
+  let newNoScale = Math.max(0.6, 1 - noAttempts * 0.05);
+  noBtn.style.transform = `scale(${newNoScale})`;
 }
+
 noBtn.addEventListener("mouseover", moveNo);
 
 /* YES FLOW */
@@ -220,26 +211,19 @@ yesBtn.addEventListener("click", () => {
   if (stage === 1) {
     stage = 2;
     question.textContent = "Will you be mine forever? 💍";
-
-    noBtn.style.left = "50%";
-    noBtn.style.top = "15px";
-    noBtn.style.transform = "translateX(-50%) scale(1)";
-    yesBtn.style.transform = "translateX(-50%) scale(1)";
   }
 
   else if (stage === 2) {
     stage = 3;
     question.textContent = "Are you sure? There's no going back 😌";
     yesBtn.textContent = "I'm sure ❤️";
-    yesBtn.classList.add("stage3-yes");
+    yesBtn.style.transform = `translateX(-50%) scale(${Math.max(1.3, yesScale)})`;
   }
 
   else if (stage === 3) {
 
     bgMusic.volume = 0;
     bgMusic.play().catch(() => {});
-
-    card.style.transform = "scale(0.95)";
     card.style.opacity = "0";
 
     setTimeout(() => {
@@ -254,8 +238,8 @@ yesBtn.addEventListener("click", () => {
       }, 100);
 
       confetti({
-        particleCount: 400,
-        spread: 140,
+        particleCount: 500,
+        spread: 150,
         origin: { y: 0.6 }
       });
 
