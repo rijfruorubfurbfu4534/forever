@@ -38,6 +38,7 @@ h1 {
   color: white;
 }
 
+/* BUTTONS */
 .buttons {
   position: relative;
   width: 100%;
@@ -54,7 +55,6 @@ button {
   transition: all 0.2s ease;
 }
 
-/* YES BUTTON */
 .yes {
   background: #ff2e63;
   color: white;
@@ -64,13 +64,6 @@ button {
   animation: pulse 1.8s infinite;
 }
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.6); }
-  70% { box-shadow: 0 0 0 15px rgba(255,46,99,0); }
-  100% { box-shadow: 0 0 0 0 rgba(255,46,99,0); }
-}
-
-/* NO BUTTON */
 .no {
   background: #222;
   color: white;
@@ -79,15 +72,21 @@ button {
   transform: translateX(-50%) scale(1);
 }
 
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.6); }
+  70% { box-shadow: 0 0 0 15px rgba(255,46,99,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,46,99,0); }
+}
+
 /* HEARTS */
 .heart {
   position: fixed;
   bottom: -20px;
   font-size: 18px;
   animation: floatUp 6s linear forwards;
-  opacity: 0.8;
+  opacity: 0.9;
   z-index: 0;
-  pointer-events: none; /* IMPORTANT FIX */
+  pointer-events: none;
 }
 
 @keyframes floatUp {
@@ -99,7 +98,7 @@ button {
 #finalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,19 +118,12 @@ button {
   width: 350px;
   border-radius: 18px;
   box-shadow: 0 25px 70px rgba(0,0,0,0.6);
-  animation: zoomIn 6s ease forwards;
 }
 
 #finalText {
   margin-top: 20px;
   color: white;
   font-size: 18px;
-  letter-spacing: 1px;
-}
-
-@keyframes zoomIn {
-  from { transform: scale(0.95); }
-  to { transform: scale(1.05); }
 }
 </style>
 </head>
@@ -148,7 +140,7 @@ button {
 </div>
 
 <div id="finalOverlay">
-  <img id="lovePhoto" src="forever.png" alt="Forever">
+  <img id="lovePhoto" src="forever.png">
   <div id="finalText">Hereafter, Aanya Salia, you're my forever.</div>
 </div>
 
@@ -160,7 +152,7 @@ button {
 let stage = 1;
 let scaleNo = 1;
 let scaleYes = 1;
-let heartInterval;
+let heartSpeed = 300;
 
 const question = document.getElementById("question");
 const noBtn = document.getElementById("noBtn");
@@ -175,38 +167,41 @@ function createHeart() {
   heart.className = "heart";
   heart.textContent = "❤️";
   heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = (Math.random() * 15 + 15) + "px";
+  heart.style.fontSize = (Math.random() * 20 + 15) + "px";
   document.body.appendChild(heart);
   setTimeout(() => heart.remove(), 6000);
 }
+setInterval(createHeart, heartSpeed);
 
-/* MOVE NO BUTTON */
+/* MOVE NO */
 function moveNo() {
-  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+  const x = Math.random() * (window.innerWidth - 120);
+  const y = Math.random() * (window.innerHeight - 60);
 
   noBtn.style.left = x + "px";
   noBtn.style.top = y + "px";
 
   if (stage < 3) {
-    scaleNo -= 0.04;
-    if (scaleNo < 0.08) scaleNo = 0.08;
+    scaleNo -= 0.02; /* slower shrink */
+    if (scaleNo < 0.2) scaleNo = 0.2; /* never disappear */
     noBtn.style.transform = `scale(${scaleNo})`;
   }
 
-  scaleYes += 0.25;
+  scaleYes += 0.15;
   yesBtn.style.transform = `translateX(-50%) scale(${scaleYes})`;
 }
-
 noBtn.addEventListener("mouseover", moveNo);
 
-/* YES CLICK FLOW */
+/* YES CLICK */
 yesBtn.addEventListener("click", () => {
 
   if (stage === 1) {
     stage = 2;
     question.textContent = "Will you be mine forever? 💍";
-    heartInterval = setInterval(createHeart, 800);
+    scaleNo = 1;
+    scaleYes = 1;
+    noBtn.style.transform = "scale(1)";
+    yesBtn.style.transform = "translateX(-50%) scale(1)";
   }
 
   else if (stage === 2) {
@@ -214,8 +209,6 @@ yesBtn.addEventListener("click", () => {
     question.textContent = "Are you sure? There's no going back 😌";
     yesBtn.textContent = "I'm sure ❤️";
     noBtn.textContent = "Wait... maybe not";
-    clearInterval(heartInterval);
-    heartInterval = setInterval(createHeart, 400);
   }
 
   else if (stage === 3) {
@@ -226,7 +219,6 @@ yesBtn.addEventListener("click", () => {
     card.style.opacity = "0";
 
     setTimeout(() => {
-
       finalOverlay.classList.add("show");
 
       let fade = setInterval(() => {
@@ -238,8 +230,8 @@ yesBtn.addEventListener("click", () => {
       }, 100);
 
       confetti({
-        particleCount: 200,
-        spread: 90,
+        particleCount: 300,
+        spread: 120,
         origin: { y: 0.6 }
       });
 
