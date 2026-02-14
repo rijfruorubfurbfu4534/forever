@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You ❤️</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+  body {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ff758c, #ff7eb3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .card {
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.15);
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 2;
+  }
+
+  h1 {
+    margin-bottom: 25px;
+    font-size: 28px;
+    min-height: 50px;
+    color: white;
+  }
+
+  .buttons {
+    position: relative;
+    width: 320px;
+    height: 220px;
+    margin: auto;
+  }
+
+  button {
+    padding: 14px 32px;
+    font-size: 18px;
+    border: none;
+    border-radius: 14px;
+    position: absolute;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  #yes, #yes2 {
+    background: #ff2e63;
+    color: white;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+  }
+
+  #no, #no2 {
+    background: #222;
+    color: white;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 20px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* Photo Reveal */
+  #photoWrapper {
+    margin-top: 25px;
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+  }
+
+  .photoContainer {
+    position: relative;
+    display: inline-block;
+  }
+
+  #lovePhoto {
+    width: 300px;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    animation: cinematicZoom 6s ease forwards;
+  }
+
+  .caption {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 18px;
+    letter-spacing: 1px;
+    background: rgba(0,0,0,0.45);
+    padding: 6px 14px;
+    border-radius: 10px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes cinematicZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+  }
+
+  .romantic-bg {
+    position: fixed;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(28px) brightness(0.55);
+    z-index: 0;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1 id="question">Will you be my Valentine? ❤️</h1>
+
+  <div class="buttons" id="stage1">
+    <button id="no">No</button>
+    <button id="yes">Yes 💖</button>
+  </div>
+
+  <div class="buttons hidden" id="stage2">
+    <button id="no2">No</button>
+    <button id="yes2">Yes 💍</button>
+  </div>
+
+  <div id="photoWrapper" class="hidden">
+    <div class="photoContainer">
+      <img id="lovePhoto" src="forever.png">
+      <div class="caption">From this moment, forever.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 🎵 Romantic Background Music -->
+<audio id="bgMusic" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_55c1b5d9a0.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const noBtn2 = document.getElementById("no2");
+  const yesBtn2 = document.getElementById("yes2");
+
+  const stage1 = document.getElementById("stage1");
+  const stage2 = document.getElementById("stage2");
+  const question = document.getElementById("question");
+  const photoWrapper = document.getElementById("photoWrapper");
+  const bgMusic = document.getElementById("bgMusic");
+
+  let scaleNo = 1;
+
+  function moveNo(btn) {
+    const x = Math.random() * (window.innerWidth - btn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+
+    scaleNo -= 0.1;
+    if (scaleNo < 0.25) scaleNo = 0.25;
+
+    btn.style.left = x + "px";
+    btn.style.top = y + "px";
+    btn.style.transform = `scale(${scaleNo})`;
+  }
+
+  noBtn.addEventListener("mouseover", () => moveNo(noBtn));
+  noBtn2.addEventListener("mouseover", () => moveNo(noBtn2));
+
+  yesBtn.addEventListener("click", () => {
+    confetti({
+      particleCount: 200,
+      spread: 100,
+      origin: { y: 0.6 }
+    });
+
+    stage1.classList.add("hidden");
+    stage2.classList.remove("hidden");
+    question.innerHTML = "Will you be mine forever? 💍";
+  });
+
+  yesBtn2.addEventListener("click", () => {
+    question.innerHTML = "She said yes.";
+    stage2.classList.add("hidden");
+
+    // Start music ONLY here
+    bgMusic.play().catch(() => {});
+
+    const bg = document.createElement("div");
+    bg.className = "romantic-bg";
+    bg.style.backgroundImage = "url('forever.png')";
+    document.body.appendChild(bg);
+
+    photoWrapper.classList.remove("hidden");
+
+    confetti({
+      particleCount: 250,
+      spread: 100,
+      origin: { y: 0.6 }
+    });
+  });
+</script>
+
+</body>
+</html>
