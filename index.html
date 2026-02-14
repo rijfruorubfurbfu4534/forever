@@ -7,163 +7,190 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-  body {
-    height: 100vh;
-    margin: 0;
-    overflow: hidden;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #ff758c, #ff7eb3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
+body {
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #ff758c, #ff7eb3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 
-  .card {
-    backdrop-filter: blur(15px);
-    background: rgba(255,255,255,0.15);
-    padding: 40px;
-    border-radius: 25px;
-    box-shadow: 0 0 40px rgba(0,0,0,0.2);
-    position: relative;
-    z-index: 2;
-    width: 350px;
-  }
+/* CARD */
 
-  h1 {
-    margin-bottom: 25px;
-    font-size: 24px;
-    min-height: 70px;
-    color: white;
-    transition: opacity 0.4s ease;
-  }
+.card {
+  backdrop-filter: blur(15px);
+  background: rgba(255,255,255,0.15);
+  padding: 40px;
+  border-radius: 25px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 3;
+  width: 350px;
+  transition: opacity 0.6s ease;
+}
 
-  .buttons {
-    position: relative;
-    width: 100%;
-    height: 180px;
-  }
+h1 {
+  margin-bottom: 25px;
+  font-size: 22px;
+  min-height: 70px;
+  color: white;
+  transition: all 0.4s ease;
+}
 
-  button {
-    padding: 14px 28px;
-    font-size: 16px;
-    border: none;
-    border-radius: 12px;
-    position: absolute;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
+.buttons {
+  position: relative;
+  width: 100%;
+  height: 180px;
+}
 
-  .yes {
-    background: #ff2e63;
-    color: white;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 15px;
-  }
+button {
+  padding: 14px 28px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  position: absolute;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-  .no {
-    background: #222;
-    color: white;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 15px;
-  }
+/* YES BUTTON */
 
-  .hidden { display: none; }
+.yes {
+  background: #ff2e63;
+  color: white;
+  left: 50%;
+  bottom: 15px;
+  transform: translateX(-50%) scale(1);
+  animation: pulse 1.8s infinite;
+}
 
-  /* Reveal */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,46,99,0.6); }
+  70% { box-shadow: 0 0 0 15px rgba(255,46,99,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,46,99,0); }
+}
 
-  #photoWrapper {
-    margin-top: 20px;
-    opacity: 0;
-    animation: fadeIn 2s ease forwards;
-  }
+/* NO BUTTON */
 
-  .photoContainer {
-    position: relative;
-    display: inline-block;
-  }
+.no {
+  background: #222;
+  color: white;
+  left: 50%;
+  top: 15px;
+  transform: translateX(-50%) scale(1);
+}
 
-  #lovePhoto {
-    width: 280px;
-    border-radius: 16px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    animation: cinematicZoom 6s ease forwards;
-  }
+/* HEARTS */
 
-  .caption {
-    position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-size: 16px;
-    background: rgba(0,0,0,0.45);
-    padding: 6px 12px;
-    border-radius: 8px;
-  }
+.heart {
+  position: fixed;
+  bottom: -20px;
+  font-size: 18px;
+  animation: floatUp 6s linear forwards;
+  opacity: 0.8;
+  z-index: 1;
+}
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(25px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+@keyframes floatUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-110vh); opacity: 0; }
+}
 
-  @keyframes cinematicZoom {
-    from { transform: scale(1); }
-    to { transform: scale(1.05); }
-  }
+/* FINAL OVERLAY */
 
-  .romantic-bg {
-    position: fixed;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    filter: blur(28px) brightness(0.55);
-    z-index: 0;
-  }
+#finalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  z-index: 5;
+}
+
+#finalOverlay.show {
+  opacity: 1;
+}
+
+#lovePhoto {
+  width: 350px;
+  border-radius: 18px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.6);
+  animation: zoomIn 6s ease forwards;
+}
+
+#finalText {
+  margin-top: 20px;
+  color: white;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.95); }
+  to { transform: scale(1.05); }
+}
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="card" id="card">
   <h1 id="question">Will you be my Valentine? ❤️</h1>
 
   <div class="buttons">
     <button id="noBtn" class="no">No</button>
     <button id="yesBtn" class="yes">Yes 💖</button>
   </div>
-
-  <div id="photoWrapper" class="hidden">
-    <div class="photoContainer">
-      <img id="lovePhoto" src="forever.png">
-      <div class="caption">Hereafter, Aanya Salia, you’re my forever.</div>
-    </div>
-  </div>
 </div>
 
-<audio id="bgMusic" preload="auto">
-  <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_55c1b5d9a0.mp3" type="audio/mpeg">
+<div id="finalOverlay">
+  <img id="lovePhoto" src="forever.png" alt="Forever">
+  <div id="finalText">Hereafter, Aanya Salia, you're my forever.</div>
+</div>
+
+<audio id="bgMusic">
+  <source src="song.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 let stage = 1;
 let scaleNo = 1;
 let scaleYes = 1;
+let heartInterval;
+
 const question = document.getElementById("question");
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
-const photoWrapper = document.getElementById("photoWrapper");
+const card = document.getElementById("card");
+const finalOverlay = document.getElementById("finalOverlay");
 const bgMusic = document.getElementById("bgMusic");
 
+/* HEART FUNCTION */
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "❤️";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = (Math.random() * 15 + 15) + "px";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 6000);
+}
+
+/* MOVE NO BUTTON */
 function moveNo() {
   const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
   const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
 
   noBtn.style.left = x + "px";
   noBtn.style.top = y + "px";
-  noBtn.style.transition = "all 0.15s ease";
 
   if (stage < 3) {
     scaleNo -= 0.04;
@@ -177,44 +204,42 @@ function moveNo() {
 
 noBtn.addEventListener("mouseover", moveNo);
 
+/* YES CLICK FLOW */
 yesBtn.addEventListener("click", () => {
 
   if (stage === 1) {
     stage = 2;
-    question.innerHTML = "Will you be mine forever? 💍";
-    scaleNo = 1;
-    scaleYes = 1;
-    noBtn.style.transform = "translateX(-50%) scale(1)";
-    yesBtn.style.transform = "translateX(-50%) scale(1)";
+    question.textContent = "Will you be mine forever? 💍";
+    heartInterval = setInterval(createHeart, 800);
   }
 
   else if (stage === 2) {
     stage = 3;
-    question.innerHTML = "Are you sure? There’s no going back 😌";
-    yesBtn.innerHTML = "I’m sure. ❤️";
-    noBtn.innerHTML = "Wait… maybe not";
-    scaleNo = 1;
-    scaleYes = 1.2;
+    question.textContent = "Are you sure? There's no going back 😌";
+    yesBtn.textContent = "I'm sure ❤️";
+    noBtn.textContent = "Wait... maybe not";
+    clearInterval(heartInterval);
+    heartInterval = setInterval(createHeart, 400);
   }
 
   else if (stage === 3) {
 
-    question.style.opacity = "0";
-    noBtn.classList.add("hidden");
-    yesBtn.classList.add("hidden");
+    bgMusic.volume = 0;
+    bgMusic.play().catch(() => {});
+
+    card.style.opacity = "0";
 
     setTimeout(() => {
 
-      bgMusic.play().catch(() => {});
-      question.innerHTML = "";
-      question.style.opacity = "1";
+      finalOverlay.classList.add("show");
 
-      const bg = document.createElement("div");
-      bg.className = "romantic-bg";
-      bg.style.backgroundImage = "url('forever.png')";
-      document.body.appendChild(bg);
-
-      photoWrapper.classList.remove("hidden");
+      let fade = setInterval(() => {
+        if (bgMusic.volume < 1) {
+          bgMusic.volume += 0.05;
+        } else {
+          clearInterval(fade);
+        }
+      }, 100);
 
       confetti({
         particleCount: 200,
