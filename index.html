@@ -27,55 +27,55 @@
     box-shadow: 0 0 40px rgba(0,0,0,0.2);
     position: relative;
     z-index: 2;
+    width: 350px;
   }
 
   h1 {
     margin-bottom: 25px;
-    font-size: 28px;
-    min-height: 50px;
+    font-size: 24px;
+    min-height: 70px;
     color: white;
+    transition: opacity 0.4s ease;
   }
 
   .buttons {
     position: relative;
-    width: 320px;
-    height: 220px;
-    margin: auto;
+    width: 100%;
+    height: 180px;
   }
 
   button {
-    padding: 14px 32px;
-    font-size: 18px;
+    padding: 14px 28px;
+    font-size: 16px;
     border: none;
-    border-radius: 14px;
+    border-radius: 12px;
     position: absolute;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     cursor: pointer;
   }
 
-  #yes, #yes2 {
+  .yes {
     background: #ff2e63;
     color: white;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 20px;
+    bottom: 15px;
   }
 
-  #no, #no2 {
+  .no {
     background: #222;
     color: white;
     left: 50%;
     transform: translateX(-50%);
-    top: 20px;
+    top: 15px;
   }
 
-  .hidden {
-    display: none;
-  }
+  .hidden { display: none; }
 
-  /* Photo Reveal */
+  /* Reveal */
+
   #photoWrapper {
-    margin-top: 25px;
+    margin-top: 20px;
     opacity: 0;
     animation: fadeIn 2s ease forwards;
   }
@@ -86,7 +86,7 @@
   }
 
   #lovePhoto {
-    width: 300px;
+    width: 280px;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.4);
     animation: cinematicZoom 6s ease forwards;
@@ -94,19 +94,18 @@
 
   .caption {
     position: absolute;
-    bottom: 14px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
     color: white;
-    font-size: 18px;
-    letter-spacing: 1px;
+    font-size: 16px;
     background: rgba(0,0,0,0.45);
-    padding: 6px 14px;
-    border-radius: 10px;
+    padding: 6px 12px;
+    border-radius: 8px;
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
+    from { opacity: 0; transform: translateY(25px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
@@ -131,90 +130,101 @@
 <div class="card">
   <h1 id="question">Will you be my Valentine? ❤️</h1>
 
-  <div class="buttons" id="stage1">
-    <button id="no">No</button>
-    <button id="yes">Yes 💖</button>
-  </div>
-
-  <div class="buttons hidden" id="stage2">
-    <button id="no2">No</button>
-    <button id="yes2">Yes 💍</button>
+  <div class="buttons">
+    <button id="noBtn" class="no">No</button>
+    <button id="yesBtn" class="yes">Yes 💖</button>
   </div>
 
   <div id="photoWrapper" class="hidden">
     <div class="photoContainer">
       <img id="lovePhoto" src="forever.png">
-      <div class="caption">From this moment, forever.</div>
+      <div class="caption">Hereafter, Aanya Salia, you’re my forever.</div>
     </div>
   </div>
 </div>
 
-<!-- 🎵 Romantic Background Music -->
 <audio id="bgMusic" preload="auto">
   <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_55c1b5d9a0.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-  const noBtn = document.getElementById("no");
-  const yesBtn = document.getElementById("yes");
-  const noBtn2 = document.getElementById("no2");
-  const yesBtn2 = document.getElementById("yes2");
+let stage = 1;
+let scaleNo = 1;
+let scaleYes = 1;
+const question = document.getElementById("question");
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const photoWrapper = document.getElementById("photoWrapper");
+const bgMusic = document.getElementById("bgMusic");
 
-  const stage1 = document.getElementById("stage1");
-  const stage2 = document.getElementById("stage2");
-  const question = document.getElementById("question");
-  const photoWrapper = document.getElementById("photoWrapper");
-  const bgMusic = document.getElementById("bgMusic");
+function moveNo() {
+  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
 
-  let scaleNo = 1;
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+  noBtn.style.transition = "all 0.15s ease";
 
-  function moveNo(btn) {
-    const x = Math.random() * (window.innerWidth - btn.offsetWidth);
-    const y = Math.random() * (window.innerHeight - btn.offsetHeight);
-
-    scaleNo -= 0.1;
-    if (scaleNo < 0.25) scaleNo = 0.25;
-
-    btn.style.left = x + "px";
-    btn.style.top = y + "px";
-    btn.style.transform = `scale(${scaleNo})`;
+  if (stage < 3) {
+    scaleNo -= 0.04;
+    if (scaleNo < 0.08) scaleNo = 0.08;
+    noBtn.style.transform = `scale(${scaleNo})`;
   }
 
-  noBtn.addEventListener("mouseover", () => moveNo(noBtn));
-  noBtn2.addEventListener("mouseover", () => moveNo(noBtn2));
+  scaleYes += 0.25;
+  yesBtn.style.transform = `translateX(-50%) scale(${scaleYes})`;
+}
 
-  yesBtn.addEventListener("click", () => {
-    confetti({
-      particleCount: 200,
-      spread: 100,
-      origin: { y: 0.6 }
-    });
+noBtn.addEventListener("mouseover", moveNo);
 
-    stage1.classList.add("hidden");
-    stage2.classList.remove("hidden");
+yesBtn.addEventListener("click", () => {
+
+  if (stage === 1) {
+    stage = 2;
     question.innerHTML = "Will you be mine forever? 💍";
-  });
+    scaleNo = 1;
+    scaleYes = 1;
+    noBtn.style.transform = "translateX(-50%) scale(1)";
+    yesBtn.style.transform = "translateX(-50%) scale(1)";
+  }
 
-  yesBtn2.addEventListener("click", () => {
-    question.innerHTML = "She said yes.";
-    stage2.classList.add("hidden");
+  else if (stage === 2) {
+    stage = 3;
+    question.innerHTML = "Are you sure? There’s no going back 😌";
+    yesBtn.innerHTML = "I’m sure. ❤️";
+    noBtn.innerHTML = "Wait… maybe not";
+    scaleNo = 1;
+    scaleYes = 1.2;
+  }
 
-    // Start music ONLY here
-    bgMusic.play().catch(() => {});
+  else if (stage === 3) {
 
-    const bg = document.createElement("div");
-    bg.className = "romantic-bg";
-    bg.style.backgroundImage = "url('forever.png')";
-    document.body.appendChild(bg);
+    question.style.opacity = "0";
+    noBtn.classList.add("hidden");
+    yesBtn.classList.add("hidden");
 
-    photoWrapper.classList.remove("hidden");
+    setTimeout(() => {
 
-    confetti({
-      particleCount: 250,
-      spread: 100,
-      origin: { y: 0.6 }
-    });
-  });
+      bgMusic.play().catch(() => {});
+      question.innerHTML = "";
+      question.style.opacity = "1";
+
+      const bg = document.createElement("div");
+      bg.className = "romantic-bg";
+      bg.style.backgroundImage = "url('forever.png')";
+      document.body.appendChild(bg);
+
+      photoWrapper.classList.remove("hidden");
+
+      confetti({
+        particleCount: 200,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
+
+    }, 800);
+  }
+});
 </script>
 
 </body>
