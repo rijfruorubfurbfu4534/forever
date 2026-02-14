@@ -1,22 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Aanya ❤️</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #ff758c, #ff7eb3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.card {
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(15px);
+  padding: 40px;
+  border-radius: 25px;
+  width: 350px;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+
+h1 {
+  color: white;
+  min-height: 80px;
+}
+
+button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  position: absolute;
+  transition: 0.2s;
+}
+
+#yesBtn {
+  background: #ff2e63;
+  color: white;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) scale(1);
+}
+
+#noBtn {
+  background: black;
+  color: white;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.heart {
+  position: fixed;
+  bottom: -20px;
+  font-size: 20px;
+  animation: floatUp 5s linear forwards;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-110vh); opacity: 0; }
+}
+
+#finalOverlay {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  opacity: 0;
+  transition: 1s;
+  pointer-events: none;
+}
+
+#finalOverlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#lovePhoto {
+  width: 400px;
+  max-width: 90%;
+  border-radius: 20px;
+}
+
+#finalText {
+  color: white;
+  margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+  <h1 id="question">Will you be my Valentine? ❤️</h1>
+  <button id="noBtn">No</button>
+  <button id="yesBtn">Yes 💖</button>
+</div>
+
+<div id="finalOverlay">
+  <img id="lovePhoto" src="forever.png">
+  <div id="finalText">Hereafter, Aanya Salia, you're my forever.</div>
+</div>
+
+<audio id="bgMusic">
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+
 <script>
 let stage = 1;
 let noAttempts = 0;
 let yesScale = 1;
-
-const stage1Base = "Will you be my Valentine? ❤️";
-const stage2Base = "Will you be mine forever? 💍";
-
-const messages = [
-  "Are you sureee? 🥺",
-  "Think again… carefully 😌",
-  "You really want to press No? 😭",
-  "That hurts a little you know 💔",
-  "AANYA 😳 are you serious?",
-  "Okay now you're just testing me 😩",
-  "The Yes button is getting stronger 😈",
-  "Resistance is futile 💘",
-  "The Yes is taking over 😭"
-];
 
 const question = document.getElementById("question");
 const noBtn = document.getElementById("noBtn");
@@ -25,100 +131,83 @@ const card = document.getElementById("card");
 const finalOverlay = document.getElementById("finalOverlay");
 const bgMusic = document.getElementById("bgMusic");
 
-/* HEARTS */
-function createHeart() {
+const messages = [
+  "Are you sure? 🥺",
+  "Think again 😌",
+  "That hurts 😭",
+  "AANYA 😳",
+  "The Yes is growing...",
+  "You can't escape 😈"
+];
+
+/* Hearts */
+setInterval(() => {
   const heart = document.createElement("div");
   heart.className = "heart";
-  heart.textContent = "❤️";
+  heart.innerText = "❤️";
   heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = (Math.random() * 30 + 20) + "px";
+  heart.style.fontSize = (Math.random() * 20 + 15) + "px";
   document.body.appendChild(heart);
   setTimeout(() => heart.remove(), 5000);
-}
-setInterval(createHeart, 150);
+}, 200);
 
-/* NO ESCAPE + MESSAGE UPDATE */
+/* No behavior */
 function moveNo() {
-
-  if (stage === 3) return; // stop chaos in final stage
+  if (stage === 3) return;
 
   noAttempts++;
 
-  // Update escalating message
   if (noAttempts <= messages.length) {
-    question.textContent = messages[noAttempts - 1];
-  } else {
-    question.textContent = "The Yes button is inevitable 😌";
+    question.innerText = messages[noAttempts - 1];
   }
 
-  // Keep No inside card
   const cardRect = card.getBoundingClientRect();
-  const btnWidth = noBtn.offsetWidth;
-  const btnHeight = noBtn.offsetHeight;
 
-  const maxX = cardRect.width - btnWidth - 20;
-  const maxY = cardRect.height - btnHeight - 20;
+  const maxX = cardRect.width - 100;
+  const maxY = cardRect.height - 60;
 
-  const randomX = Math.random() * maxX;
-  const randomY = Math.random() * maxY;
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
 
-  noBtn.style.left = randomX + "px";
-  noBtn.style.top = randomY + "px";
-
-  // EXPONENTIAL YES GROWTH
-  yesScale = yesScale * 1.4;
-  if (yesScale > 8) yesScale = 8;
+  yesScale *= 1.5;
+  if (yesScale > 6) yesScale = 6;
 
   yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
-
-  // No shrinks slightly but stays visible
-  let newNoScale = Math.max(0.7, 1 - noAttempts * 0.05);
-  noBtn.style.transform = `scale(${newNoScale})`;
 }
 
 noBtn.addEventListener("mouseover", moveNo);
 
-/* YES FLOW */
+/* Yes flow */
 yesBtn.addEventListener("click", () => {
 
   if (stage === 1) {
     stage = 2;
-    noAttempts = 0;   // reset escalation for stage 2
-    yesScale = 1;
-    yesBtn.style.transform = "translateX(-50%) scale(1)";
-    question.textContent = stage2Base;
+    question.innerText = "Will you be mine forever? 💍";
   }
 
   else if (stage === 2) {
     stage = 3;
-    question.textContent = "Are you sure? There's no going back 😌";
-    yesBtn.textContent = "I'm sure ❤️";
+    question.innerText = "Are you sure? There's no going back 😌";
+    yesBtn.innerText = "I'm sure ❤️";
   }
 
   else if (stage === 3) {
 
     bgMusic.volume = 0;
     bgMusic.play().catch(() => {});
-    card.style.opacity = "0";
 
-    setTimeout(() => {
-      finalOverlay.classList.add("show");
+    card.style.display = "none";
+    finalOverlay.classList.add("show");
 
-      let fade = setInterval(() => {
-        if (bgMusic.volume < 1) {
-          bgMusic.volume += 0.05;
-        } else {
-          clearInterval(fade);
-        }
-      }, 100);
+    let fade = setInterval(() => {
+      if (bgMusic.volume < 1) bgMusic.volume += 0.05;
+      else clearInterval(fade);
+    }, 100);
 
-      confetti({
-        particleCount: 600,
-        spread: 150,
-        origin: { y: 0.6 }
-      });
-
-    }, 800);
+    confetti({ particleCount: 500, spread: 140 });
   }
 });
 </script>
+
+</body>
+</html>
